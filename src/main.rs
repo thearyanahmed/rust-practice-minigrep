@@ -3,6 +3,7 @@
 use std::env;
 use std::fs;
 use std::process;
+use std::error::Error;
 
 struct Config {
     query: String,
@@ -27,17 +28,23 @@ impl Config {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    println!("{:?}", args); 
-
     let conf = Config::new(&args)
             .unwrap_or_else(|err| {
-                println!("Problem parsing arguments: {}", err);
+                println!("problem parsing arguments: {}", err);
                 process::exit(1);
             });
 
-    let contents = fs::read_to_string(conf.filename) 
-                    .expect("could not read file.");
+    if let Err(e) = run(conf) {
+        println!("error running application. {}", e);
 
-    println!("With text:\n{}", contents);
+        process::exit(1);
+    }
+}
+
+fn run(conf: Config) -> Result<(), Box<dyn Error>>{
+    let _contents = fs::read_to_string(conf.filename) 
+                    .expect("could not read file.")?;
+
+    return Ok(());
 }
 
