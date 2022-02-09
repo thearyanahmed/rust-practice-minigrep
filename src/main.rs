@@ -3,22 +3,29 @@
 use std::env;
 use std::fs;
 
+struct Config {
+    query: String,
+    filename: String,
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     println!("{:?}", args); 
 
-        
-    let (query, filename) = parseParams(args);
+    let conf = parseParams(&args);
 
-    let contents = fs::read_to_string(filename) 
+    let contents = fs::read_to_string(conf.filename) 
                     .expect("could not read file.");
 
-    println!("With text:\n{}using query{}\nusing filename {}\n", contents,query,filename);
+    println!("With text:\n{}", contents);
 }
 
 
-fn parseParams(args: &[String]) (&str, &str) {
+fn parseParams(args: &[String]) -> Config {
     // TODO check length
-    return (&args[1], &args[2]);
+    return Config{
+        query: args[1].clone(),
+        filename: args[2].clone()
+    };
 }
